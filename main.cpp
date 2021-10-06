@@ -1,8 +1,10 @@
 #include <iostream>
 #include <Magick++.h>
 #include <tuple>
+#include <filesystem>
 using namespace std;
 using namespace Magick;
+namespace fs = std::filesystem;
 
 const unsigned char MAX_COLOUR = 255;
 
@@ -52,17 +54,24 @@ int main(int argc,char **argv)
     int a_g;
     int a_b;
 
+    std::string doc = fs::current_path();
+    for (const auto & entry : fs::directory_iterator(doc)){
+        try{
+        image.read(entry.path());
 
-    image.read("source.jpg");
+        tie(a_r, a_g, a_b) = average_rgb(image);
 
+        cout << a_r << "||" << a_g << "||" << a_b << endl;
+        }
+        //These below exceptions occur if the file is not an image, it will skip if the file is not an image
+        catch(Magick::ErrorMissingDelegate &error){
+            continue;
+        }
+        catch(Magick::ErrorCorruptImage &error){
+            continue;
+        }
 
-
-    tie(a_r, a_g, a_b) = average_rgb(image);
-
-    cout << a_r << "||" << a_g << "||" << a_b << endl;
-
-
-
+    }
     }
     catch( Exception &error_ )
       {
