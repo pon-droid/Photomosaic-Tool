@@ -10,6 +10,9 @@ const unsigned char MAX_COLOUR = 255;
 
 
 
+
+
+
 tuple<int, int, int> average_rgb (Image &image){
     int aver_r = 0;
     int aver_g = 0;
@@ -41,25 +44,18 @@ tuple<int, int, int> average_rgb (Image &image){
     return make_tuple(aver_r, aver_g, aver_b);
 }
 
-int main(int argc,char **argv)
-{
-
-    InitializeMagick(*argv);
-    try{
-
-
-    Image image;
-
-    int a_r;
-    int a_g;
-    int a_b;
-
-    std::string doc = fs::current_path();
+void load_sources(){
+    std::string doc = fs::path("./image_cells/");
     for (const auto & entry : fs::directory_iterator(doc)){
-        try{
-        image.read(entry.path());
+        Image image_cell;
 
-        tie(a_r, a_g, a_b) = average_rgb(image);
+        int a_r;
+        int a_g;
+        int a_b;
+        try{
+        image_cell.read(entry.path());
+
+        tie(a_r, a_g, a_b) = average_rgb(image_cell);
 
         cout << a_r << "||" << a_g << "||" << a_b << endl;
         }
@@ -72,6 +68,18 @@ int main(int argc,char **argv)
         }
 
     }
+}
+
+int main(int argc,char **argv)
+{
+
+    InitializeMagick(*argv);
+    try{
+
+
+    load_sources();
+
+
     }
     catch( Exception &error_ )
       {
