@@ -9,7 +9,11 @@ namespace fs = std::filesystem;
 const unsigned char MAX_COLOUR = 255;
 
 
+struct rgb_values {
 
+    int a_r, a_g, a_b;
+
+};
 
 
 
@@ -44,8 +48,9 @@ tuple<int, int, int> average_rgb (Image &image){
     return make_tuple(aver_r, aver_g, aver_b);
 }
 
-void load_sources(){
+vector<rgb_values> load_sources(){
     std::string doc = fs::path("./image_cells/");
+    vector<rgb_values> source_rgb;
     for (const auto & entry : fs::directory_iterator(doc)){
         Image image_cell;
 
@@ -55,7 +60,9 @@ void load_sources(){
         try{
         image_cell.read(entry.path());
 
+
         tie(a_r, a_g, a_b) = average_rgb(image_cell);
+        source_rgb.push_back({a_r,a_g,a_b});
 
         cout << a_r << "||" << a_g << "||" << a_b << endl;
         }
@@ -68,7 +75,11 @@ void load_sources(){
         }
 
     }
+
+    return source_rgb;
 }
+
+
 
 int main(int argc,char **argv)
 {
@@ -77,7 +88,10 @@ int main(int argc,char **argv)
     try{
 
 
-    load_sources();
+    vector<rgb_values> source_rgb = load_sources();
+
+    cout << "NEW" << endl;
+    cout << source_rgb[3].a_r << "||" << source_rgb[3].a_g << "||" << source_rgb[3].a_b;
 
 
     }
