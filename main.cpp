@@ -3,11 +3,16 @@
 #include <Magick++.h>
 #include <tuple>
 #include <filesystem>
+#include <math.h>
 using namespace std;
 using namespace Magick;
 namespace fs = std::filesystem;
 
 const unsigned char MAX_COLOUR = 255;
+
+const int IMAGE_W = 50;
+const int IMAGE_H = 50;
+
 
 struct i_rgb_values {
     int r, g, b;
@@ -15,7 +20,7 @@ struct i_rgb_values {
 
 
 struct s_rgb_values {
-    string img_name = "HI";
+    string img_name;
     int a_r, a_g, a_b;
 
 };
@@ -27,9 +32,6 @@ vector<i_rgb_values>  return_i_rgb(){
     geo.aspect(true);
     input_image.resize(geo);
 
-    const int IMAGE_W = input_image.rows();
-    const int IMAGE_H = input_image.columns();
-
     vector<i_rgb_values> input_rgb;
 
     for(int y = 0; y<IMAGE_H; y++){
@@ -40,7 +42,6 @@ vector<i_rgb_values>  return_i_rgb(){
             unsigned char green = colour.green() * MAX_COLOUR;
             unsigned char blue = colour.blue() * MAX_COLOUR;
 
-            cout << (int)red << "<<" << (int)green << "<<" << (int)blue << endl;
             input_rgb.push_back({red,green,blue});
         }
     }
@@ -53,8 +54,6 @@ tuple<double, double, double> average_rgb (Image &image){
     double aver_g = 0;
     double aver_b = 0;
 
-    const int IMAGE_W = image.rows();
-    const int IMAGE_H = image.columns();
 
     for(int y = 0; y<IMAGE_H; y++){
         for(int x = 0; x<IMAGE_W; x++){
@@ -83,7 +82,7 @@ vector<s_rgb_values> load_sources(){
     std::string doc = fs::path("./image_cells/");
     vector<s_rgb_values> source_rgb;
     Image image_cell;
-    int i = 0;
+
     for (const auto & entry : fs::directory_iterator(doc)){
 
 
@@ -96,10 +95,8 @@ vector<s_rgb_values> load_sources(){
 
         tie(a_r, a_g, a_b) = average_rgb(image_cell);
         source_rgb.push_back({entry.path(),a_r,a_g,a_b});
-        cout << source_rgb[i].img_name << endl;
-        cout << a_r << "||" << a_g << "||" << a_b << endl;
+        cout << source_rgb[3].a_r << endl;
 
-        i++;
         }
         //These below exceptions occur if the file is not an image, it will skip if the file is not an image
         catch(Magick::ErrorMissingDelegate &error){
@@ -114,6 +111,16 @@ vector<s_rgb_values> load_sources(){
     return source_rgb;
 }
 
+void calc_colour_diff(vector<i_rgb_values> input_rgb, vector<s_rgb_values> source_rgb){
+
+    for(int i = 0; i<IMAGE_H*IMAGE_W; i++){
+       cout << "INPUT = " << input_rgb[i].r << " OUTPUT = " << source_rgb[i].a_r << endl;
+       cout << input_rgb[i].r - source_rgb[i].a_r << endl;
+
+    }
+
+}
+
 
 
 int main(int argc,char **argv)
@@ -125,6 +132,7 @@ int main(int argc,char **argv)
 
     vector<s_rgb_values> source_rgb = load_sources();
     vector<i_rgb_values> input_rgb = return_i_rgb();
+    calc_colour_diff(input_rgb, source_rgb);
 
     }
     catch( Exception &error_ )
