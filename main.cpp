@@ -12,8 +12,8 @@ namespace fs = std::filesystem;
 
 const unsigned char MAX_COLOUR = 255;
 
-const int IMAGE_W = 100;
-const int IMAGE_H = 100;
+const int IMAGE_W = 50;
+const int IMAGE_H = 50;
 
 
 
@@ -154,10 +154,11 @@ void construct_image(vector<string> img_names){
         image.read(img_names[i]);
         img_list.push_back(image);
     }
-    Montage montagesettings;
-    montagesettings.tile("100x100");
+    Montage montage_settings;
+    montage_settings.geometry("50x50-0-0");
+    montage_settings.tile("50x50");
     list<Magick::Image> montagelist;
-    montageImages(&montagelist, img_list.begin(), img_list.end(), montagesettings);
+    montageImages(&montagelist, img_list.begin(), img_list.end(), montage_settings);
     writeImages(montagelist.begin(), montagelist.end(), "DONE.PNG");
 }
 
