@@ -4,6 +4,8 @@
 #include <tuple>
 #include <filesystem>
 #include <math.h>
+#include <algorithm>
+#include <vector>
 using namespace std;
 using namespace Magick;
 namespace fs = std::filesystem;
@@ -124,6 +126,10 @@ int formula(int r, int g, int b, int rT, int gT, int bT){
 }
 
 
+bool sort_colour_diff(const s_rgb_values& x, const s_rgb_values& y) { return x.dist < y.dist; }
+
+
+
 void calc_colour_diff(vector<i_rgb_values> input_rgb, vector<s_rgb_values> source_rgb){
 // Get list of colour difference for each pixel in the input image
 // and store it in source_rgb struct
@@ -132,7 +138,9 @@ void calc_colour_diff(vector<i_rgb_values> input_rgb, vector<s_rgb_values> sourc
         for(int j = 0; j < source_rgb.size(); j++){
             source_rgb[j].dist = sqrt(formula(input_rgb[i].r,input_rgb[i].g,input_rgb[i].b,source_rgb[j].a_r,source_rgb[j].a_g,source_rgb[j].a_b));
         }
-
+        sort(source_rgb.begin(), source_rgb.end(), sort_colour_diff);
+        cout << source_rgb[0].img_name << endl;
+        cout << source_rgb[0].dist << endl;
     }
 
 }
